@@ -2,7 +2,7 @@ function Reactive(f, obj={}) {
 	return Object.assign(f, { ws: [], constructor: Reactive, ...obj }, proto)
 }
 
-export function Variabl(x=undefined) {
+export function Variable(x=undefined) {
 	const r = Reactive(set(), { x: undefined })
 	if (x !== undefined)
 		setTimeout(() => r(x), 0)
