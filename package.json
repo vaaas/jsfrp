@@ -1,0 +1,23 @@
+{
+  "name": "jsfrp",
+  "version": "0.0.1",
+  "description": "Javascript Functional Reactive Programming Utilities",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vaaas/jsfrp.git"
+  },
+  "keywords": [
+    "library",
+    "frp"
+  ],
+  "author": "Vasileios Pasialiokis",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/vaaas/jsfrp/issues"
+  },
+  "homepage": "https://github.com/vaaas/jsfrp#readme"
+}
