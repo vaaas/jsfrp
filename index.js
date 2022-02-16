@@ -2,14 +2,20 @@ function Reactive(f, obj={}) {
 	return Object.assign(f, { ws: [], constructor: Reactive, ...obj }, proto)
 }
 
-export const Variable = (x=undefined) => {
+export function Variabl(x=undefined) {
 	const r = Reactive(set(), { x: undefined })
 	if (x !== undefined)
 		setTimeout(() => r(x), 0)
 	return r
 }
 
-export const Observable = f => Reactive(f)
+export function Observable(f) { return Reactive(f) }
+
+export function EventStream(elem, event) {
+	const r = Reactive(notify())
+	elem.addEventListener(event, r)
+	return r
+}
 
 export function zip(...rs) {
 	const me = debounce(0)
@@ -58,6 +64,10 @@ export function E(name, attrs={}, children=[]) {
 	}
 
 	return elem
+}
+
+function notify() {
+	return function me(x) { return me.notify(x) }
 }
 
 function set() {
