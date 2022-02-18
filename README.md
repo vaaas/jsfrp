@@ -5,7 +5,7 @@ Lean and slim FRP library.
 ## Declaring a reactive variable
 
 ```javascript
-x = Variable('0')
+x = Settable('0')
 ```
 
 ## Changing it

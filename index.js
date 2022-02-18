@@ -2,13 +2,14 @@ function Reactive(f, obj={}) {
 	return Object.assign(f, { ws: [], constructor: Reactive, ...obj }, proto)
 }
 
-export function Variable(x=undefined) {
-	const r = Reactive(set(), { x: undefined })
-	if (x !== undefined)
-		setTimeout(() => r(x), 0)
+function Variable(x, f) {
+	const r = Reactive(f, { x: undefined })
+	if (x !== undefined) setTimeout(() => r(x), 0)
 	return r
 }
 
+export function Settable(x=undefined) { return Variable(x, set()) }
+export function Updateable(f=undefined) { return Variable(x, update()) }
 export function Observable(f) { return Reactive(f) }
 
 export function EventStream(elem, event) {
@@ -72,6 +73,10 @@ function notify() {
 
 function set() {
 	return function me(x) { return me.notify(me.x = x) }
+}
+
+function update() {
+	return function me(f) { return me.notify(me.x = f(me.x)) }
 }
 
 function map(f) {
