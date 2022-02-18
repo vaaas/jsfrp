@@ -9,7 +9,7 @@ function Variable(x, f) {
 }
 
 export function Settable(x=undefined) { return Variable(x, set()) }
-export function Updateable(f=undefined) { return Variable(x, update()) }
+export function Updateable(f=undefined) { return Variable(f, update()) }
 export function Observable(f) { return Reactive(f) }
 
 export function EventStream(elem, event) {
