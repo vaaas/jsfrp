@@ -1,16 +1,15 @@
-function Reactive(f, obj={}) {
-	return Object.assign(f, { ws: [], constructor: Reactive, ...obj }, proto)
+function Reactive(f) {
+	return Object.assign(f, { ws: [], constructor: }, proto)
 }
 
-function Variable(x, f) {
-	const r = Reactive(f, { x: undefined })
-	if (x !== undefined) setTimeout(() => r(x), 0)
-	return r
+export function Variable() {
+	function me(x) {
+		me.x = x
+		me.notify(x)
+	}
+	me.x = undefined
+	return me
 }
-
-export function Settable(x=undefined) { return Variable(x, set()) }
-export function Updateable(f=undefined) { return Variable(f, update()) }
-export function Observable(f) { return Reactive(f) }
 
 export function EventStream(elem, event) {
 	const r = Reactive(notify())
@@ -26,57 +25,12 @@ export function zip(...rs) {
 		xs.push(undefined)
 		rs[i].each(x => { xs[i] = x; me(xs) })
 	}
-	return me
-}
 
-export function E(name, attrs={}, children=[]) {
-	const elem = document.createElement(name)
-
-	for (const [k, v] of Object.entries(attrs)) {
-		switch(k) {
-		case 'class':
-			if (Array.isArray(v))
-				elem.className = v.join(' ')
-			else if (v.constructor === Reactive)
-				v.each(x => elem.className = Array.isArray(x) ? x.join(' ') : x)
-			else
-				elem.classname = v
-			break
-
-		default:
-			if (v.constructor === Reactive)
-				v.each(x => elem[k] = x)
-			else
-				elem[k] = v
-			break
-		}
-	}
-
-	for (const x of children) {
-		if (typeof x === 'string')
-			elem.appendChild(document.createTextNode(x))
-		else if (typeof x === 'number')
-			elem.appendChild(document.createTextNode(''+x))
-		else if (x.constructor === Reactive) {
-			const node = document.createTextNode('')
-			x.each(x => node.textcontent = x)
-			elem.appendChild(node)
-		}
-	}
-
-	return elem
+	return Reactive(me)
 }
 
 function notify() {
 	return function me(x) { return me.notify(x) }
-}
-
-function set() {
-	return function me(x) { return me.notify(me.x = x) }
-}
-
-function update() {
-	return function me(f) { return me.notify(me.x = f(me.x)) }
 }
 
 function map(f) {
@@ -125,14 +79,13 @@ const proto = {
 		return this
 	},
 
-	map(f) { return Observable(map(f)).observe(this) },
-	filter(f) { return Observable(filter(f)).observe(this) },
-	scan(f, i) { return Observable(scan(f, i)).observe(this) },
-	debounce(t) { return Observable(debounce(t)).observe(this) },
-	zip(...rs) { return Observable(zip(this, ...rs)) },
+	map(f) { return Reactive(map(f)).observe(this) },
+	filter(f) { return Reactive(filter(f)).observe(this) },
+	scan(f, i) { return Reactive(scan(f, i)).observe(this) },
+	debounce(t) { return Reactive(debounce(t)).observe(this) },
 
 	merge(...rs) {
-		const x = Observable().observe(this)
+		const x = Reactive().observe(this)
 		for (let i = 0, len = rs.length; i < len; i++)
 			x.observe(rs[i])
 		return x
